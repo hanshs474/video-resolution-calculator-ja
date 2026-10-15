@@ -1,0 +1,30 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>動画のアスペクト比・解像度計算|480p・720p・1080p・4K のピクセル数早見表</title><meta name="description" content="16:9、9:16、1:1、4:3、21:9 の動画を 480p・720p・1080p・4K で作ったときの幅と高さのピクセル数。好きな比率を入れて計算もできます。">
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px/1.75 "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,system-ui,sans-serif;background:#0f0e13;color:#ece9f2;word-break:auto-phrase;line-break:strict}
+main{max-width:860px;margin:0 auto;padding:32px 20px 64px}h1{font-size:28px;line-height:1.35;margin:0 0 10px}h2{font-size:20px;margin:36px 0 10px}
+p.lead{color:#b4aec2;margin:0 0 24px}.card{background:#18161f;border:1px solid #2a2635;border-radius:14px;padding:20px;margin:16px 0}
+label{display:block;font-size:13px;color:#b4aec2;margin:12px 0 6px}input,select,textarea{width:100%;background:#0f0e13;color:#ece9f2;border:1px solid #352f44;border-radius:10px;padding:10px 12px;font:inherit}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#9890aa 50%),linear-gradient(135deg,#9890aa 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+button{background:#e0567a;color:#fff;border:0;border-radius:10px;padding:11px 18px;font:600 15px inherit;cursor:pointer;margin-top:14px}button.ghost{background:#2a2635}
+.out{white-space:pre-wrap;background:#0f0e13;border:1px solid #352f44;border-radius:10px;padding:14px;margin-top:14px;min-height:60px;font:14px/1.7 inherit}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid #2a2635}th{color:#b4aec2;font-weight:600}
+a{color:#f08aa5}.cta{display:inline-block;margin-top:8px;background:#e0567a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:600}
+.muted{color:#9890aa;font-size:14px}canvas,img,video{max-width:100%;border-radius:10px}footer{margin-top:48px;color:#9890aa;font-size:13px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#352f44;border-radius:10px}::-webkit-scrollbar-track{background:#0f0e13}
+</style></head><body><main>
+<h1>動画のアスペクト比・解像度計算</h1>
+<p class="lead">「720p」は短いほうの辺の長さです。長い辺は比率で決まるので、縦長の 720p は幅 720、高さ 1280 になります。比率を選ぶと各画質の正確なピクセル数が出ます。</p>
+<div class="card"><div class="row"><div><label>アスペクト比</label><select id="r"><option>16:9</option><option>9:16</option><option>1:1</option><option>4:3</option><option>3:4</option><option>21:9</option><option>4:5</option></select></div>
+<div><label>または任意の比率(幅:高さ)</label><input id="cr" placeholder="例 2.39:1"></div></div>
+<table id="t" style="margin-top:16px"></table></div>
+<h2>どれを選ぶか</h2>
+<p>YouTube や横長のプレーヤーなら 16:9、TikTok・リール・ショートなら 9:16、フィード投稿なら 1:1 か 4:5。公開する比率で最初から生成します。16:9 を後から 9:16 に切り抜くと、残るのは画面の 3 分の 1 ほどです。低い画質で作った動画や、手元の古い動画を後から 1080p 相当に上げたいときは<a href="https://emaki.ai/video-upscaler?utm_source=github.io&utm_medium=tool">動画 高画質化</a>ツールが使えます。</p>
+<div class="card"><strong>画質が足りない動画は、ブラウザで高画質化できます。</strong><br><a class="cta" href="https://emaki.ai/video-upscaler?utm_source=github.io&utm_medium=tool">動画を高画質化する</a></div>
+<footer>このページは <a href="https://emaki.ai/?utm_source=github.io&utm_medium=tool">emaki</a>(シーダンス 2.5 / 2.0 を日本語のまま使える AI 動画生成サイト)の無料ツールです。処理はすべてブラウザの中で行われ、ファイルはどこにも送信されません。</footer>
+</main><script>const tiers=[['480p',480],['720p',720],['1080p',1080],['1440p',1440],['4K',2160]];const even=n=>Math.round(n/2)*2;
+function parse(s){const m=String(s).split(':').map(Number);return m.length==2&&m[0]>0&&m[1]>0?m:null}
+function draw(){const r=parse(document.getElementById('cr').value)||parse(document.getElementById('r').value);const [w,h]=r;let rows='<tr><th>画質</th><th>幅</th><th>高さ</th><th>メガピクセル</th></tr>';
+for(const [n,s] of tiers){let W,H;if(w>=h){H=s;W=even(s*w/h)}else{W=s;H=even(s*h/w)}rows+=`<tr><td>${n}</td><td>${W}</td><td>${H}</td><td>${(W*H/1e6).toFixed(2)}</td></tr>`}document.getElementById('t').innerHTML=rows}
+document.getElementById('r').oninput=draw;document.getElementById('cr').oninput=draw;draw();</script></body></html>
